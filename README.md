@@ -44,6 +44,8 @@
 
 This project was developed as part of the ETHGlobal ETHOnline 2025 hackathon, showcasing the power of Avail's Nexus SDK for cross-chain interoperability.
 
+> **📝 Development Note**: This project's foundation (Next.js + Web3 setup) was initialized before the hackathon using Avail's Nexus SDK template. All sponsor-specific work, including Nexus SDK integration, cross-chain bridging, Bridge & Execute functionality, Aave V3 integration, and the comprehensive [AVAIL_FEEDBACK.md](AVAIL_FEEDBACK.md) (759 lines), were developed specifically for ETHOnline 2025. See recent commits (dcac55f → present) for hackathon work.
+
 ---
 
 ## ✨ Features
