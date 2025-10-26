@@ -120,3 +120,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide any third-party logos (ConnectKit, Nexus SDK branding, Next.js dev indicator) */
+[style*="position: fixed"][style*="bottom"][style*="left"],
+[class*="fixed bottom-"],
+div[style*="position: fixed"][style*="z-index: 999"],
+div[style*="position: fixed"][style*="bottom: 20px"],
+div[style*="position: fixed"][style*="bottom: 1rem"],
+/* Next.js dev indicator */
+nextjs-portal,
+nextjs-portal *,
+[data-nextjs-dialog],
+[data-nextjs-dialog-overlay],
+button[data-nextjs-errors],
+[id*="nextjs"],
+[class*="nextjs"],
+div[style*="position: fixed"]:has(button),
+div[style*="position: fixed"]:has([role="dialog"]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

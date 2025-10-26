@@ -4,9 +4,9 @@ import NexusBridge from "./bridge";
 
 export default function Nexus() {
   return (
-    <div className="flex items-center justify-center w-full max-w-xl flex-col gap-6 z-10">
+    <div className="flex items-center justify-center w-full max-w-2xl mx-auto flex-col gap-6 z-10">
       <Tabs defaultValue="balance" className="w-full items-center">
-        <TabsList>
+        <TabsList className="mx-auto">
           <TabsTrigger value="balance">Unified Balance</TabsTrigger>
           <TabsTrigger value="bridge">Send Tokens</TabsTrigger>
         </TabsList>

@@ -1,7 +1,7 @@
 import { useNexus } from "@/providers/NexusProvider";
 import { CHAIN_METADATA, type UserAsset } from "@avail-project/nexus-core";
 import { DollarSign, Loader2 } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import { Label } from "./ui/label";
 import {
   Accordion,
@@ -17,22 +17,31 @@ const NexusUnifiedBalance = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const { nexusSDK } = useNexus();
-  const fetchUnifiedBalance = async () => {
+  
+  const fetchUnifiedBalance = useCallback(async () => {
+    if (!nexusSDK || !nexusSDK.isInitialized()) {
+      console.log("⏳ Nexus SDK not initialized yet");
+      setUnifiedBalance(undefined);
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const balance = await nexusSDK?.getUnifiedBalances();
-      console.log("Unified Balance:", balance);
+      console.log("🔄 Fetching unified balance...");
+      const balance = await nexusSDK.getUnifiedBalances();
+      console.log("✅ Unified Balance:", balance);
       setUnifiedBalance(balance);
     } catch (error) {
-      console.error("Error fetching unified balance:", error);
+      console.error("❌ Error fetching unified balance:", error);
+      setUnifiedBalance(undefined);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [nexusSDK]);
 
   useEffect(() => {
     fetchUnifiedBalance();
-  }, []);
+  }, [fetchUnifiedBalance]);
 
   const formatBalance = (balance: string, decimals: number) => {
     const num = parseFloat(balance);
@@ -43,6 +52,20 @@ const NexusUnifiedBalance = () => {
     return (
       <div className="w-full max-w-2xl mx-auto p-4 text-center flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  // Show message if SDK is not initialized
+  if (!nexusSDK || !nexusSDK.isInitialized()) {
+    return (
+      <div className="w-full max-w-lg mx-auto p-6 text-center rounded-lg border border-border bg-yellow-50">
+        <p className="text-sm text-gray-700 mb-3">
+          ⚠️ Nexus SDK is not initialized yet.
+        </p>
+        <p className="text-xs text-gray-600">
+          Click the <strong>"Connect Nexus"</strong> button below the wallet connector to initialize.
+        </p>
       </div>
     );
   }
@@ -58,13 +81,20 @@ const NexusUnifiedBalance = () => {
           <DollarSign className="w-4 h-4 font-bold" strokeWidth={3} />
           {unifiedBalance
             ?.reduce((acc, fiat) => acc + fiat.balanceInFiat, 0)
-            .toFixed(2)}
+            .toFixed(2) || "0.00"}
         </Label>
       </div>
-      <Accordion type="single" collapsible className="w-full space-y-4">
-        {unifiedBalance
-          ?.filter((token) => parseFloat(token.balance) > 0)
-          .map((token) => (
+      
+      {/* Show empty state if no tokens */}
+      {(!unifiedBalance || unifiedBalance.length === 0 || unifiedBalance.filter(t => parseFloat(t.balance) > 0).length === 0) ? (
+        <div className="w-full text-center py-8 text-sm text-gray-500">
+          No tokens found. Connect your wallet and ensure you have assets on supported chains.
+        </div>
+      ) : (
+        <Accordion type="single" collapsible className="w-full space-y-4">
+          {unifiedBalance
+            .filter((token) => parseFloat(token.balance) > 0)
+            .map((token) => (
             <AccordionItem
               key={token.symbol}
               value={token.symbol}
@@ -130,7 +160,8 @@ const NexusUnifiedBalance = () => {
               </AccordionContent>
             </AccordionItem>
           ))}
-      </Accordion>
+        </Accordion>
+      )}
     </div>
   );
 };
