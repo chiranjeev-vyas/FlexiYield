@@ -8,7 +8,7 @@ import { Skeleton } from "./ui/skeleton";
 import TransactionModal from "./TransactionModal";
 import { useNexus } from "@/providers/NexusProvider";
 import { useTransactionHistoryContext } from "@/providers/TransactionHistoryProvider";
-import useListenTransaction from "@/hooks/useListenTransactions";
+// import useListenTransaction from "@/hooks/useListenTransactions";
 import { useAccount, useReadContracts, useWalletClient, usePublicClient } from "wagmi";
 import { formatUnits } from "viem";
 import toast from "react-hot-toast";
@@ -18,21 +18,18 @@ import {
 } from "@/lib/nexus-helper";
 import { supplyToAave } from "@/lib/aave-supply";
 import {
-  CHAIN_IDS,
-  CHAIN_NAMES,
-  CHAIN_METADATA,
   USDC_ADDRESSES,
   USDC_DECIMALS,
-  AAVE_V3_POOL_ADDRESSES,
   SUPPORTED_CHAINS,
   isSupportedChain,
   isAaveAvailable,
   getUSDCAddress,
   getAavePoolAddress,
   getChainName,
+  getChainMetadata,
 } from "@/lib/constants";
 import { parseError, logError, isUserRejection } from "@/lib/error-handler";
-import { AlertCircle, Loader2, RefreshCw } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { fetchAllAaveAPYs } from "@/lib/aave-helper";
 
 interface YieldData {
@@ -151,11 +148,11 @@ const YieldTable = () => {
   // Always on testnet
   const isTestnet = true;
   
-  // Listen for Nexus SDK transaction events
-  const { processing, explorerURL } = useListenTransaction({
-    sdk: nexusSDK!,
-    type: "bridge",
-  });
+  // Listen for Nexus SDK transaction events (currently unused but may be needed for future features)
+  // const { processing, explorerURL } = useListenTransaction({
+  //   sdk: nexusSDK!,
+  //   type: "bridge",
+  // });
 
   // Create initial yield data dynamically based on config
   const initialYieldData = useMemo<YieldData[]>(() => {
@@ -171,12 +168,10 @@ const YieldTable = () => {
 
   // Yield data state (will be populated with real APY)
   const [yieldData, setYieldData] = useState<YieldData[]>(initialYieldData);
-  const [isLoadingAPY, setIsLoadingAPY] = useState(true);
 
   // Update yield data when config changes (network mode toggle)
   useEffect(() => {
     setYieldData(initialYieldData);
-    setIsLoadingAPY(true);
   }, [initialYieldData]);
 
   // Amount inputs for each chain (chainId -> amount string)
@@ -196,9 +191,7 @@ const YieldTable = () => {
   const [txStatus, setTxStatus] = useState<TxStatus>("idle");
   const [txHash, setTxHash] = useState<string | null>(null);
   const [txError, setTxError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [loadingChainId, setLoadingChainId] = useState<number | null>(null);
-  const [currentTxId, setCurrentTxId] = useState<string | null>(null);
   const [currentTxAmount, setCurrentTxAmount] = useState<string>("0"); // Store amount separately
   const [isCrossChainTx, setIsCrossChainTx] = useState<boolean>(false); // Track if current tx is cross-chain
   const [lastFailedTransaction, setLastFailedTransaction] = useState<{
@@ -241,7 +234,6 @@ const YieldTable = () => {
   useEffect(() => {
     const fetchAPYData = async () => {
       console.log("🔄 Fetching real APY data from Aave V3...");
-      setIsLoadingAPY(true);
       
       try {
         // Prepare chain configurations for chains that have Aave
@@ -281,8 +273,6 @@ const YieldTable = () => {
         toast.error("Failed to fetch APY data - Using fallback values", {
           duration: 3000,
         });
-      } finally {
-        setIsLoadingAPY(false);
       }
     };
 
@@ -414,7 +404,6 @@ const YieldTable = () => {
     setCurrentTxAmount(amount); // Store amount for modal display
     setIsCrossChainTx(chain.id !== yieldData.chainId); // Set cross-chain flag
     setIsTxModalOpen(true);
-    setIsLoading(true);
     setLoadingChainId(yieldData.chainId);
     setTxStatus("approving");
     setTxError(null);
@@ -431,7 +420,6 @@ const YieldTable = () => {
       amount,
       status: "pending",
     });
-    setCurrentTxId(txId);
 
     try {
       const sourceChainId = chain.id as SupportedChainId;
@@ -580,7 +568,6 @@ const YieldTable = () => {
         });
       }
     } finally {
-      setIsLoading(false);
       setLoadingChainId(null);
       intentRefCallback.current = null; // Clean up callback
     }
@@ -594,7 +581,6 @@ const YieldTable = () => {
       setTxHash(null);
       setTxError(null);
       setSelectedChain(null);
-      setCurrentTxId(null);
       setLoadingChainId(null);
       setIsCrossChainTx(false); // Reset cross-chain flag
     }, 300);
@@ -719,7 +705,7 @@ const YieldTable = () => {
             </tr>
           </thead>
           <tbody className="bg-card">
-            {yieldData.map((item, index) => {
+            {yieldData.map((item) => {
               const isBestRate = item.apy === highestAPY && item.apy > 0;
               const validation = validateAmount(item.chainId);
               const amount = amounts[item.chainId] || "";

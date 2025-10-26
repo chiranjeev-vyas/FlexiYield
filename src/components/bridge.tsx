@@ -45,31 +45,23 @@ const NexusBridge = () => {
   const initiateBridge = async () => {
     // Validation checks
     if (!isConnected || !address) {
-      toast.error("Wallet Not Connected", {
-        description: "Please connect your wallet to use the bridge",
-      });
+      toast.error("Wallet Not Connected - Please connect your wallet to use the bridge");
       return;
     }
 
     if (!nexusSDK || !nexusSDK.isInitialized()) {
-      toast.error("Nexus SDK Not Initialized", {
-        description: "Please click 'Initialize Nexus' button first",
-      });
+      toast.error("Nexus SDK Not Initialized - Please click 'Initialize Nexus' button first");
       return;
     }
 
     if (!inputs.chain || !inputs.token || !inputs.amount) {
-      toast.error("Missing Information", {
-        description: "Please fill in all fields",
-      });
+      toast.error("Missing Information - Please fill in all fields");
       return;
     }
 
     const amount = parseFloat(inputs.amount);
     if (isNaN(amount) || amount <= 0) {
-      toast.error("Invalid Amount", {
-        description: "Please enter a valid amount greater than 0",
-      });
+      toast.error("Invalid Amount - Please enter a valid amount greater than 0");
       return;
     }
 
@@ -93,8 +85,7 @@ const NexusBridge = () => {
       if (bridgeResult?.success) {
         console.log("✅ Bridge successful!");
         console.log("🔗 Explorer URL:", bridgeResult.explorerUrl);
-        toast.success("Bridge Successful!", {
-          description: `${inputs.amount} ${inputs.token} bridged successfully`,
+        toast.success(`Bridge Successful! ${inputs.amount} ${inputs.token} bridged successfully`, {
           duration: 5000,
         });
       } else {
@@ -103,8 +94,7 @@ const NexusBridge = () => {
     } catch (error) {
       console.error("❌ Error while bridging:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-      toast.error("Bridge Failed", {
-        description: errorMessage,
+      toast.error(`Bridge Failed - ${errorMessage}`, {
         duration: 6000,
       });
     } finally {

@@ -395,7 +395,7 @@ const TransactionModal = ({
                   <span className="font-bold text-green-900">{destinationChain}</span>
                 </p>
                 <p className="text-sm text-green-700 mt-2">
-                  💰 You're now earning yield! Check your position on{" "}
+                  💰 You&apos;re now earning yield! Check your position on{" "}
                   <a 
                     href="https://staging.aave.com/" 
                     target="_blank" 

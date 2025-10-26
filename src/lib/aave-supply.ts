@@ -187,7 +187,7 @@ export async function supplyToAave(
     }
 
     // Additional validation: Check if amount is valid
-    if (amountWei <= 0n) {
+    if (amountWei <= BigInt(0)) {
       throw new Error(`Invalid amount: ${amount} USDC. Amount must be greater than 0.`);
     }
 
@@ -225,7 +225,7 @@ export async function supplyToAave(
           args: [aavePoolAddress, amountWei],
           chain: walletClient.chain,
           account: userAddress,
-          gas: 100000n, // Set reasonable gas limit for approval
+          gas: BigInt(100000), // Set reasonable gas limit for approval
         });
       },
       "Approval"
@@ -271,7 +271,7 @@ export async function supplyToAave(
           ],
           chain: walletClient.chain,
           account: userAddress,
-          gas: 500000n, // Set reasonable gas limit for supply (Aave can be gas-intensive)
+          gas: BigInt(500000), // Set reasonable gas limit for supply (Aave can be gas-intensive)
         });
       },
       "Supply"

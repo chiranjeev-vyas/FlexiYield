@@ -64,7 +64,7 @@ const NexusUnifiedBalance = () => {
           ⚠️ Nexus SDK is not initialized yet.
         </p>
         <p className="text-xs text-gray-600">
-          Click the <strong>"Connect Nexus"</strong> button below the wallet connector to initialize.
+          Click the <strong>&quot;Connect Nexus&quot;</strong> button below the wallet connector to initialize.
         </p>
       </div>
     );

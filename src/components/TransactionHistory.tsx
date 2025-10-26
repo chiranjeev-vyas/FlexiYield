@@ -14,9 +14,7 @@ import {
   ExternalLink,
   Trash2
 } from "lucide-react";
-import { CHAIN_METADATA } from "@/lib/constants";
-
-type SupportedChainId = number;
+import { getChainMetadata } from "@/lib/constants";
 
 const TransactionHistory = () => {
   const { transactions, clearHistory, isLoaded } = useTransactionHistoryContext();
@@ -81,7 +79,7 @@ const TransactionHistory = () => {
 
   // Get chain logo
   const getChainLogo = (chainId: number) => {
-    const metadata = CHAIN_METADATA[chainId as SupportedChainId];
+    const metadata = getChainMetadata(chainId);
     return metadata?.logo || "https://via.placeholder.com/24";
   };
 

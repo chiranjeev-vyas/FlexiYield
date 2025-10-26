@@ -82,7 +82,7 @@ export async function diagnoseNexusSDK(sdk: NexusSDK | null): Promise<NexusDiagn
     if (config.network) {
       diagnostics.recommendations.push(`ℹ️  Network: ${config.network}`);
     }
-  } catch (error) {
+  } catch {
     diagnostics.recommendations.push("⚠️  Could not read SDK config");
   }
 
