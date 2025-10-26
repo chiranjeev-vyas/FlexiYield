@@ -107,11 +107,30 @@ async function executeWithRetry<T>(
       return await fn();
     } catch (error: unknown) {
       const errorMsg = error instanceof Error ? error.message : String(error);
+      
+      // Check for user rejection FIRST - never retry these!
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorCode = (error as any)?.code;
+      const isUserRejection = 
+        errorMsg.includes("User rejected") ||
+        errorMsg.includes("user rejected") ||
+        errorMsg.includes("User denied") ||
+        errorMsg.includes("user denied") ||
+        errorMsg.includes("rejected the request") ||
+        errorMsg.includes("denied transaction") ||
+        errorCode === 4001 || // MetaMask rejection code
+        errorCode === "ACTION_REJECTED";
+      
+      if (isUserRejection) {
+        console.log(`❌ ${actionName}: User rejected transaction in wallet`);
+        throw error; // Don't retry, throw immediately
+      }
+      
+      // Check for rate limiting (but NOT user rejections or contract reverts)
       const isRateLimited = 
         errorMsg.includes("rate limit") || 
         errorMsg.includes("429") ||
-        errorMsg.includes("too many requests") ||
-        errorMsg.includes("reverted"); // Sometimes rate limits cause reverts
+        errorMsg.includes("too many requests");
       
       if (isRateLimited && attempt < maxRetries - 1) {
         const delay = initialDelayMs * Math.pow(1.5, attempt); // Gentler backoff: 5s, 7.5s, 11.25s, 16.875s, 25.3s
