@@ -160,14 +160,14 @@ const YieldTable = () => {
   // Create initial yield data dynamically based on config
   const initialYieldData = useMemo<YieldData[]>(() => {
     return SUPPORTED_CHAINS.map((chainId) => ({
-      chain: (CHAIN_NAMES as any)[chainId] || `Chain ${chainId}`,
-      chainLogo: (CHAIN_METADATA as any)[chainId]?.logo || "https://via.placeholder.com/24",
+      chain: getChainName(chainId),
+      chainLogo: getChainMetadata(chainId)?.logo || "https://via.placeholder.com/24",
       protocol: isAaveAvailable(chainId) ? `Aave V3 ${isTestnet ? "Testnet" : ""}` : "Aave V3 (Not Available)",
       apy: 0,
       tvl: isAaveAvailable(chainId) ? "Loading..." : "Not Available",
       chainId,
     }));
-  }, [SUPPORTED_CHAINS, CHAIN_NAMES, CHAIN_METADATA, isAaveAvailable, isTestnet]);
+  }, [isTestnet]);
 
   // Yield data state (will be populated with real APY)
   const [yieldData, setYieldData] = useState<YieldData[]>(initialYieldData);

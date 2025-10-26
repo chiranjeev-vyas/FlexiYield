@@ -105,8 +105,8 @@ async function executeWithRetry<T>(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await fn();
-    } catch (error: any) {
-      const errorMsg = error?.message || String(error);
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
       const isRateLimited = 
         errorMsg.includes("rate limit") || 
         errorMsg.includes("429") ||
@@ -207,8 +207,9 @@ export async function supplyToAave(
       }
       
       console.log("✅ Reserve is active. aToken:", reserveData.aTokenAddress);
-    } catch (error: any) {
-      console.warn("⚠️ Could not verify reserve status:", error.message);
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.warn("⚠️ Could not verify reserve status:", errorMsg);
       console.warn("   Proceeding anyway, but transaction may fail if reserve is not properly configured.");
     }
 

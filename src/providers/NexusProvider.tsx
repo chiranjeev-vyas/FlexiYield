@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react-refresh/only-export-components */
 import useInitNexus from "@/hooks/useInitNexus";
 import {
   NexusSDK,

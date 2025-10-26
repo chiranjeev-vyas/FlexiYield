@@ -237,6 +237,7 @@ export async function createBridgeAndSupplyIntent(
       console.log("🔧 Attempting Nexus sendCallsSync (Bridge & Execute)...");
       
       // Check if sendCallsSync exists on the SDK
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (typeof (sdk as any).sendCallsSync === 'function') {
         console.log("✅ sendCallsSync method found - using atomic Bridge & Execute");
         
@@ -248,6 +249,7 @@ export async function createBridgeAndSupplyIntent(
         );
 
         // Create the Bridge & Execute intent
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = await (sdk as any).sendCallsSync({
           token: "USDC",
           amount: params.amount,
@@ -301,7 +303,7 @@ export async function createBridgeAndSupplyIntent(
     console.log("📝 Calling sdk.bridge() NOW - Watch for MetaMask popup...");
     console.log("=" .repeat(60));
     
-    let bridgeResult;
+    let bridgeResult: { success?: boolean; transactionHash?: string; explorerUrl?: string } = {};
     try {
       // Add timeout to catch hanging calls
       const bridgePromise = sdk.bridge({
@@ -320,7 +322,7 @@ export async function createBridgeAndSupplyIntent(
         }, 120000)
       );
       
-      bridgeResult = await Promise.race([bridgePromise, timeoutPromise]);
+      bridgeResult = await Promise.race([bridgePromise, timeoutPromise]) as { success?: boolean; transactionHash?: string; explorerUrl?: string };
       console.log("🔍 Bridge result:", bridgeResult);
     } catch (bridgeError) {
       console.error("❌ Bridge call failed:", bridgeError);
@@ -422,7 +424,7 @@ function encodeAaveSupplyCall(
  */
 export async function getUnifiedBalances(
   sdk: NexusSDK | null
-): Promise<any[] | null> {
+): Promise<Record<string, unknown>[] | null> {
   try {
     if (!sdk || !sdk.isInitialized()) {
       throw new Error("Nexus SDK is not initialized");

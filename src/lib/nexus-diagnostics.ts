@@ -40,6 +40,7 @@ export async function diagnoseNexusSDK(sdk: NexusSDK | null): Promise<NexusDiagn
   }
 
   // Check available methods
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sdkObj = sdk as any;
   const knownMethods = [
     'init',
@@ -151,6 +152,7 @@ export async function testBridgeAvailability(sdk: NexusSDK | null): Promise<{
     }
 
     // Check if bridge method exists
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof (sdk as any).bridge !== 'function') {
       return { available: false, error: "bridge() method not found" };
     }
@@ -187,6 +189,7 @@ export async function runFullDiagnostics(sdk: NexusSDK | null): Promise<void> {
   if (sdk) {
     const proto = Object.getPrototypeOf(sdk);
     const protoMethods = Object.getOwnPropertyNames(proto)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .filter(name => typeof (proto as any)[name] === 'function')
       .filter(name => !name.startsWith('_'));
     

@@ -39,7 +39,16 @@ export const AAVE_V3_POOL_ADDRESSES: Record<SupportedChainId, `0x${string}`> = {
   [CHAIN_IDS.BASE]: "0x07eA79F68B2B3df564D0A34F8e19D9B1e339814b",
 } as const;
 
-export const CHAIN_METADATA: Record<SupportedChainId, any> = {
+export interface ChainMetadata {
+  name: string;
+  logo: string;
+  color: string;
+  explorer: string;
+  explorerName: string;
+  faucetUrl: string;
+}
+
+export const CHAIN_METADATA: Record<SupportedChainId, ChainMetadata> = {
   [CHAIN_IDS.ETHEREUM]: {
     name: "Sepolia",
     logo: "https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg",
@@ -88,19 +97,31 @@ export function isSupportedChain(chainId: number): chainId is SupportedChainId {
 }
 
 export function getChainName(chainId: number): string {
-  return (CHAIN_NAMES as any)[chainId] || `Chain ${chainId}`;
+  if (isSupportedChain(chainId)) {
+    return CHAIN_NAMES[chainId];
+  }
+  return `Chain ${chainId}`;
 }
 
 export function getUSDCAddress(chainId: number): `0x${string}` | undefined {
-  return (USDC_ADDRESSES as any)[chainId];
+  if (isSupportedChain(chainId)) {
+    return USDC_ADDRESSES[chainId];
+  }
+  return undefined;
 }
 
 export function getAavePoolAddress(chainId: number): `0x${string}` | undefined {
-  return (AAVE_V3_POOL_ADDRESSES as any)[chainId];
+  if (isSupportedChain(chainId)) {
+    return AAVE_V3_POOL_ADDRESSES[chainId];
+  }
+  return undefined;
 }
 
-export function getChainMetadata(chainId: number) {
-  return (CHAIN_METADATA as any)[chainId];
+export function getChainMetadata(chainId: number): ChainMetadata | undefined {
+  if (isSupportedChain(chainId)) {
+    return CHAIN_METADATA[chainId];
+  }
+  return undefined;
 }
 
 export function getExplorerUrl(chainId: number): string {
